@@ -57,13 +57,13 @@ jobs:
       - name: Build Pinyin edition
         run: |
           python package.py 拼音版 chinese-addons pinyin true
-          mv build/src/Fcitx5Installer.zip 小企鹅·拼音版.zip
+          mv build/src/Fcitx5Installer.zip Fcitx5-Pinyin.zip
           rm -rf build
 
       - name: Build Rime edition
         run: |
           python package.py 中州韵版 rime rime true
-          mv build/src/Fcitx5Installer.zip 小企鹅·中州韵版.zip
+          mv build/src/Fcitx5Installer.zip Fcitx5-Rime.zip
           rm -rf build
 
       - name: Upload artifact
@@ -84,8 +84,8 @@ jobs:
           title: "Nightly Build"
           files: |
             Fcitx5Installer.zip
-            小企鹅·拼音版.zip
-            小企鹅·中州韵版.zip
+            Fcitx5-Pinyin.zip
+            Fcitx5-Rime.zip
 
       - name: Setup tmate session
         if: ${{ failure() }}
