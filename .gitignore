@@ -1,0 +1,7 @@
+.DS_Store
+build
+meta.swift
+*.tar.bz2
+register_im
+enable_im
+*.dSYM
