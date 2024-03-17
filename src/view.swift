@@ -78,17 +78,20 @@ struct ContentView: View {
         Spacer().frame(height: 5)
       }
 
-      Button(action: {
-        if let url = URL(
-          string:
-            "https://github.com/fcitx-contrib/fcitx5-macos/commit/" + commit
-        ) {
-          NSWorkspace.shared.open(url)
+      Button(
+        action: {
+          if let url = URL(
+            string:
+              "https://github.com/fcitx-contrib/fcitx5-macos/commit/" + commit
+          ) {
+            NSWorkspace.shared.open(url)
+          }
+        },
+        label: {
+          Text(commit.prefix(7))
+            .foregroundColor(.blue)
         }
-      }) {
-        Text(commit.prefix(7))
-          .foregroundColor(.blue)
-      }
+      )
       .buttonStyle(PlainButtonStyle())
       .focusable(false)
       .alert(
@@ -116,22 +119,25 @@ struct ContentView: View {
 
       Spacer().frame(height: 50)
 
-      Button(action: {
-        if state == .pending {
-          if !executeInstallScript() {
-            return
+      Button(
+        action: {
+          if state == .pending {
+            if !executeInstallScript() {
+              return
+            }
+            state = .success
+          } else {
+            selectInputMethod()
+            NSApplication.shared.terminate(self)
           }
-          state = .success
-        } else {
-          selectInputMethod()
-          NSApplication.shared.terminate(self)
+        },
+        label: {
+          Text(state == .pending ? "Install" : "Start typing").font(
+            .system(size: 20)
+          )
+          .frame(width: 160, height: 40)
         }
-      }) {
-        Text(state == .pending ? "Install" : "Start typing").font(
-          .system(size: 20)
-        )
-        .frame(width: 160, height: 40)
-      }
+      )
       .background(state == .pending ? Color.blue : Color.green)
       .cornerRadius(5)
     }
