@@ -137,7 +137,7 @@ def generate_config():
 
 def make_zip():
     os.chdir('build/src')
-    sh(f'zip -r -0 Fcitx5Installer.zip Fcitx5Installer.app')
+    sh('zip -r -0 Fcitx5Installer.zip Fcitx5Installer.app')
 
 
 if __name__ == '__main__':
