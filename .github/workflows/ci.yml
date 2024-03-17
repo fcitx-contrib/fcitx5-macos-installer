@@ -75,7 +75,7 @@ jobs:
             *.zip
 
       - name: Create Nightly release
-        if: ${{ (matrix.os == macos-14) && (github.ref != 'refs/heads/master') }}
+        if: ${{ (matrix.os == 'macos-14') && (github.ref != 'refs/heads/master') }}
         uses: 'marvinpinto/action-automatic-releases@latest'
         with:
           repo_token: ${{ secrets.GITHUB_TOKEN }}
