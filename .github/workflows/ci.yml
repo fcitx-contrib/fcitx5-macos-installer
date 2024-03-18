@@ -1,0 +1,93 @@
+name: ci
+
+on:
+  push:
+    branches:
+      - master
+  pull_request:
+  workflow_dispatch:
+
+jobs:
+  lint:
+    runs-on: macos-14
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+
+      - name: Install dependencies
+        run: |
+          brew install swift-format
+          pip install pyright ruff
+
+      - name: Lint
+        run: |
+          swift-format lint -rs im src
+          ruff check package.py
+          pyright package.py
+
+  build:
+    needs: lint
+    runs-on: ${{ matrix.os }}
+    strategy:
+      matrix:
+        os: [macos-14, macos-13]
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: SwiftyLab/setup-swift@latest
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+
+      - name: Install dependencies
+        run: |
+          brew install ninja
+          pip install requests
+
+      - name: Build vanilla edition
+        run: |
+          python package.py
+          mv build/src/Fcitx5Installer.zip .
+          rm -rf build
+
+      - name: Build Pinyin edition
+        run: |
+          python package.py 拼音版 chinese-addons pinyin true
+          mv build/src/Fcitx5Installer.zip Fcitx5-Pinyin.zip
+          rm -rf build
+
+      - name: Build Rime edition
+        run: |
+          python package.py 中州韵版 rime rime true
+          mv build/src/Fcitx5Installer.zip Fcitx5-Rime.zip
+          rm -rf build
+
+      - name: Upload artifact
+        if: ${{ github.ref != 'refs/heads/master' }}
+        uses: actions/upload-artifact@v4
+        with:
+          name: artifact-${{ matrix.os }}
+          path: |
+            *.zip
+
+      - name: Create Nightly release
+        if: ${{ (matrix.os == 'macos-14') && (github.ref == 'refs/heads/master') }}
+        uses: 'marvinpinto/action-automatic-releases@latest'
+        with:
+          repo_token: ${{ secrets.GITHUB_TOKEN }}
+          automatic_release_tag: latest
+          prerelease: true
+          title: "Nightly Build"
+          files: |
+            Fcitx5Installer.zip
+            Fcitx5-Pinyin.zip
+            Fcitx5-Rime.zip
+
+      - name: Setup tmate session
+        if: ${{ failure() }}
+        uses: mxschmitt/action-tmate@v3
