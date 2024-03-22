@@ -39,6 +39,7 @@ chown -R "$user" "$CONFIG_DIR"
 
 if killall Fcitx5; then
   echo killed previously-installed Fctix5
+  exit 0
 fi
 
 ./register_im
