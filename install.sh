@@ -14,7 +14,7 @@ CONFIG_DIR="/Users/$user/.config/fcitx5"
 
 cd "$Resources"
 mkdir -p "$INSTALL_DIR"
-rm -rf "$APP_DIR"
+rm -rf "$APP_DIR/Contents/*"
 tar xjvf "Fcitx5-$ARCH.tar.bz2" -C "$INSTALL_DIR"
 xattr -dr com.apple.quarantine "$APP_DIR"
 codesign --force --sign - --deep "$APP_DIR"
