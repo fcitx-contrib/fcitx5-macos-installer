@@ -46,7 +46,7 @@ func twiceQuote(_ s: String) -> String {
 }
 
 enum InstallationState {
-  case pending, success
+  case pending, installing, success
 }
 
 struct ContentView: View {
@@ -122,29 +122,34 @@ struct ContentView: View {
       Button(
         action: {
           if state == .pending {
-            if !executeInstallScript() {
-              return
+            state = .installing
+            sudoError = false
+            DispatchQueue.global().async {
+              let success = executeInstallScript()
+              DispatchQueue.main.async {
+                state = success ? .success : .pending
+              }
             }
-            state = .success
           } else {
             selectInputMethod()
             NSApplication.shared.terminate(self)
           }
         },
         label: {
-          Text(state == .pending ? "Install" : "Start typing").font(
-            .system(size: 20)
-          )
-          .frame(width: 160, height: 40)
+          Text(state == .pending ? "Install" : state == .installing ? "Installing" : "Start typing")
+            .font(
+              .system(size: 20)
+            )
+            .frame(width: 160, height: 40)
         }
       )
-      .background(state == .pending ? Color.blue : Color.green)
+      .disabled(state == .installing)
+      .background(state == .pending ? Color.blue : state == .success ? Color.green : Color.gray)
       .cornerRadius(5)
     }
   }
 
   func executeInstallScript() -> Bool {
-    sudoError = false
     guard let resourcesPath = Bundle.main.resourcePath else {
       print("Resources not found")
       return false
@@ -161,24 +166,30 @@ struct ContentView: View {
       return false
     }
     var error: NSDictionary? = nil
+    var sudoCanceled = false
     appleScript.executeAndReturnError(&error)
     if let error = error {
       errorMsg = error["NSAppleScriptErrorBriefMessage"] as? String ?? "Unknown Error"
       if let errno = error["NSAppleScriptErrorNumber"] as? Int {
         if errno == -128 {
-          sudoError = true
+          sudoCanceled = true
+          DispatchQueue.main.async {
+            sudoError = true
+          }
         }
       }
-      if !sudoError {
-        logContent = nil
-        do {
-          let logURL = URL(fileURLWithPath: logPath)
-          let logData = try Data(contentsOf: logURL)
-          if let logString = String(data: logData, encoding: .utf8) {
-            logContent = logString
+      if !sudoCanceled {
+        DispatchQueue.main.async {
+          logContent = nil
+          do {
+            let logURL = URL(fileURLWithPath: logPath)
+            let logData = try Data(contentsOf: logURL)
+            if let logString = String(data: logData, encoding: .utf8) {
+              logContent = logString
+            }
+          } catch {
+            print("Error reading log file: \(error.localizedDescription)")
           }
-        } catch {
-          print("Error reading log file: \(error.localizedDescription)")
         }
       }
       return false
