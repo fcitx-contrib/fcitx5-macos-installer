@@ -1,7 +1,7 @@
 #!/bin/zsh
 set -xeu
 
-date
+date 1>&2
 setopt NULL_GLOB
 
 user="$1"
