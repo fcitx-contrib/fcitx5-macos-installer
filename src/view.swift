@@ -137,12 +137,11 @@ struct ContentView: View {
         },
         label: {
           Text(state == .pending ? "Install" : state == .installing ? "Installing" : "Start typing")
-            .font(
-              .system(size: 20)
-            )
-            .frame(width: 160, height: 40)
+            .padding()
+            .padding()
         }
       )
+      .controlSize(.large)
       .disabled(state == .installing)
       .background(state == .pending ? Color.blue : state == .success ? Color.green : Color.gray)
       .cornerRadius(5)
