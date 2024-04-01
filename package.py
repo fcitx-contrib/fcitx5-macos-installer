@@ -6,7 +6,8 @@ import requests
 ARCHES = ('x86_64', 'arm64')
 CONTENTS_DIR = 'build/src/Fcitx5Installer.app/Contents'
 RESOURCES_DIR = f'{CONTENTS_DIR}/Resources'
-EXECUTABLE = f'{CONTENTS_DIR}/MacOS/Fcitx5Installer'
+EXECUTABLE_DIR = f'{CONTENTS_DIR}/MacOS'
+EXECUTABLE = f'{EXECUTABLE_DIR}/Fcitx5Installer'
 REGISTER_IM = 'build/im/register_im'
 ENABLE_IM = 'build/im/enable_im'
 PLUGINS_DIR = f'{RESOURCES_DIR}/plugins'
@@ -14,6 +15,7 @@ CONFIG_DIR = f'{RESOURCES_DIR}/config'
 
 
 def sh(command: str):
+    print(command)
     assert os.system(command) == 0
 
 
@@ -46,6 +48,7 @@ def write_meta():
 
 
 def build():
+    sh(f'mkdir -p "{RESOURCES_DIR}"')
     for arch in ARCHES:
         print(f'Building {arch}')
         sh(f'cmake -B build -G Ninja -DCMAKE_BUILD_TYPE=Release -DCMAKE_OSX_ARCHITECTURES={arch}')
@@ -58,6 +61,10 @@ def build():
     sh(f'lipo -create {ENABLE_IM}-x86_64 {ENABLE_IM}-arm64 -output {RESOURCES_DIR}/enable_im')
     for arch in ARCHES:
         sh(f'rm {EXECUTABLE}-{arch}')
+
+    sh(f'cp assets/fcitx.icns "{RESOURCES_DIR}"')
+    sh(f'cp install.sh "{RESOURCES_DIR}"')
+    sh(f'rm -f "${EXECUTABLE_DIR}/Fcitx5Installer.d"')
 
 
 def download_fcitx5():

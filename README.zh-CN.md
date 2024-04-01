@@ -8,7 +8,7 @@
 
 请选择适合您的安装包：
 * [拼音版](https://github.com/fcitx-contrib/fcitx5-macos-installer/releases/download/latest/Fcitx5-Pinyin.zip)（可选双拼、五笔、仓颉等，中、英切换快捷键为 Ctrl + 左 Shift）
-* [中州韵版](https://github.com/fcitx-contrib/fcitx5-macos-installer/releases/download/latest/Fcitx5-Rime.zip)（适合鼠须管用户）
+* [中州韵版](https://github.com/fcitx-contrib/fcitx5-macos-installer/releases/download/latest/Fcitx5-Rime.zip)（适合鼠须管用户，请将 `~/Library/Rime` 中的方案复制到小企鹅的 rime 用户目录 `~/.local/share/fcitx5/rime`）
 * [原装版](https://github.com/fcitx-contrib/fcitx5-macos-installer/releases/download/latest/Fcitx5Installer.zip)（不适合新手，通过内置的插件管理器按需安装输入法）
 
 安装包本身适用于 Intel 和 Apple Silicon，
