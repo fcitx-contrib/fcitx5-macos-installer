@@ -12,10 +12,26 @@ APP_DIR="$INSTALL_DIR/Fcitx5.app"
 DATA_DIR="/Users/$user/Library/fcitx5"
 CONFIG_DIR="/Users/$user/.config/fcitx5"
 
+ICON_FILE="fcitx.icns"
+ICON_PATH="$APP_DIR/Contents/Resources/$ICON_FILE"
+ICON_BAKUP="/tmp/$ICON_FILE"
+
 cd "$Resources"
 mkdir -p "$INSTALL_DIR"
+
+# Backup maybe user-defined icon
+if [[ -f "$ICON_PATH" ]]; then
+  mv "$ICON_PATH" "$ICON_BAKUP"
+fi
+
 rm -rf "$APP_DIR/Contents/*"
+
 tar xjvf "Fcitx5-$ARCH.tar.bz2" -C "$INSTALL_DIR"
+
+if [[ -f "$ICON_BAKUP" ]]; then
+  mv "$ICON_BAKUP" "$ICON_PATH"
+fi
+
 xattr -dr com.apple.quarantine "$APP_DIR"
 codesign --force --sign - --deep "$APP_DIR"
 
