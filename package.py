@@ -63,6 +63,11 @@ def build():
         sh(f'rm {EXECUTABLE}-{arch}')
 
     sh(f'cp assets/fcitx.icns "{RESOURCES_DIR}"')
+
+    for name in os.listdir('assets'):
+        if name.endswith('.lproj'):
+            sh(f'cp -r assets/{name} "{RESOURCES_DIR}"')
+
     sh(f'cp install.sh "{RESOURCES_DIR}"')
     sh(f'rm -f "${EXECUTABLE_DIR}/Fcitx5Installer.d"')
 
