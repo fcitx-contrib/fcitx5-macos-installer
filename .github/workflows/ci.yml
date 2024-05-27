@@ -31,6 +31,8 @@ jobs:
   build:
     needs: lint
     runs-on: ${{ matrix.os }}
+    env:
+      GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
     strategy:
       matrix:
         os: [macos-14, macos-13]
