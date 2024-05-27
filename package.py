@@ -33,12 +33,17 @@ def write_meta():
 
     api_prefix = 'https://api.github.com/repos/fcitx-contrib/fcitx5-macos'
 
+    headers = {}
+    token = os.getenv('GITHUB_TOKEN')
+    if token:
+        headers['Authorization'] = f'token {token}'
+
     # latest_commit = {'object': {'sha': '47ee7b4367198da8bc2e09bee183e846d68ca3e6'}}
-    latest_commit = requests.get(f'{api_prefix}/git/ref/tags/latest').json()
+    latest_commit = requests.get(f'{api_prefix}/git/ref/tags/latest', headers=headers).json()
     commit = latest_commit['object']['sha']
 
     # latest_release = {'published_at': '2024-03-14T11:42:45Z'}
-    latest_release = requests.get(f'{api_prefix}/releases/tags/latest').json()
+    latest_release = requests.get(f'{api_prefix}/releases/tags/latest', headers=headers).json()
     date = latest_release['published_at']
 
     with open('src/meta.swift', 'w') as f:
@@ -104,7 +109,7 @@ def download_plugins():
     plugins = sys.argv[2].split(',')
     sh(f'mkdir -p {PLUGINS_DIR}')
     for plugin in plugins:
-        for arch in ARCHES:
+        for arch in ARCHES + ('any',):
             name = f'{plugin}-{arch}.tar.bz2'
             url = f'https://github.com/fcitx-contrib/fcitx5-macos-plugins/releases/download/latest/{name}'
             download(url, name, f'{PLUGINS_DIR}/{name}')

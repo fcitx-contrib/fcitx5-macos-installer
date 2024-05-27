@@ -20,7 +20,7 @@ xattr -dr com.apple.quarantine "$APP_DIR"
 codesign --force --sign - --deep "$APP_DIR"
 
 mkdir -p "$DATA_DIR"
-for plugin_path in plugins/*-$ARCH.tar.bz2; do
+for plugin_path in plugins/*-{$ARCH,any}.tar.bz2; do
   tar xjvf "$plugin_path" -C "$DATA_DIR"
 done
 chown -R "$user" "$DATA_DIR"
