@@ -1,0 +1,3 @@
+[submodule "deps/AlertToast"]
+	path = deps/AlertToast
+	url = https://github.com/fcitx-contrib/AlertToast
