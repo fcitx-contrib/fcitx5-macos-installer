@@ -1,3 +1,4 @@
+import AlertToast
 import Carbon
 import SwiftUI
 
@@ -145,6 +146,13 @@ struct ContentView: View {
       .disabled(state == .installing)
       .background(state == .pending ? Color.blue : state == .success ? Color.green : Color.gray)
       .cornerRadius(5)
+    }.toast(
+      isPresenting: Binding(
+        get: { state == .installing },
+        set: { _ in }
+      )
+    ) {
+      AlertToast(type: .loading)
     }
   }
 

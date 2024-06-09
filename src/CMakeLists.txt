@@ -6,3 +6,8 @@ add_executable("${APP_NAME}"
     view.swift
     meta.swift
 )
+
+target_link_libraries("${APP_NAME}"
+    PRIVATE
+    AlertToast
+)
