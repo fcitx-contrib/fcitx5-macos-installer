@@ -128,11 +128,6 @@ def generate_profile():
         f.write(PROFILE_HEADER.format(input_methods[0]) + body + PROFILE_TAIL)
 
 
-CONTRL_SHIFT_SWITCH = '''
-[Hotkey/TriggerKeys]
-0=Control+Shift_L
-'''
-
 ACTIVE_BY_DEFAULT = '''
 [Behavior]
 ActiveByDefault=True
@@ -148,7 +143,6 @@ def generate_config():
     if sys.argv[4] != 'true':
         return
     with open(f'{CONFIG_DIR}/config', 'w') as f:
-        f.write(CONTRL_SHIFT_SWITCH)
         f.write(ACTIVE_BY_DEFAULT)
 
 

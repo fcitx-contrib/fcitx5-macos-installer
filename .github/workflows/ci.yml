@@ -59,7 +59,7 @@ jobs:
 
       - name: Build Pinyin edition
         run: |
-          python package.py 拼音版 chinese-addons pinyin true
+          python package.py 拼音版 chinese-addons,lua pinyin true
           mv build/src/Fcitx5Installer.zip Fcitx5-Pinyin.zip
           rm -rf build
 
