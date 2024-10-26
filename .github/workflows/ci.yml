@@ -69,6 +69,12 @@ jobs:
           mv build/src/Fcitx5Installer.zip Fcitx5-Rime.zip
           rm -rf build
 
+      - name: Build Japanese edition
+        run: |
+          python package.py 日本語版 mozc mozc true
+          mv build/src/Fcitx5Installer.zip Fcitx5-Japanese.zip
+          rm -rf build
+
       - name: Upload artifact
         if: ${{ github.ref != 'refs/heads/master' }}
         uses: actions/upload-artifact@v4
@@ -89,6 +95,7 @@ jobs:
             Fcitx5Installer.zip
             Fcitx5-Pinyin.zip
             Fcitx5-Rime.zip
+            Fcitx5-Japanese.zip
 
       - name: Setup tmate session
         if: ${{ failure() }}
