@@ -9,7 +9,7 @@ on:
 
 jobs:
   lint:
-    runs-on: macos-14
+    runs-on: macos-15
     steps:
       - uses: actions/checkout@v4
 
@@ -35,7 +35,7 @@ jobs:
       GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
     strategy:
       matrix:
-        os: [macos-14, macos-13]
+        os: [macos-15, macos-13]
 
     steps:
       - uses: actions/checkout@v4
@@ -84,7 +84,7 @@ jobs:
             *.zip
 
       - name: Create Nightly release
-        if: ${{ (matrix.os == 'macos-14') && (github.ref == 'refs/heads/master') }}
+        if: ${{ (matrix.os == 'macos-15') && (github.ref == 'refs/heads/master') }}
         uses: 'marvinpinto/action-automatic-releases@latest'
         with:
           repo_token: ${{ secrets.GITHUB_TOKEN }}
