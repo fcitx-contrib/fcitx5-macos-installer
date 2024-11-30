@@ -111,7 +111,7 @@ def download_plugins():
     for plugin in plugins:
         for arch in ARCHES + ('any',):
             name = f'{plugin}-{arch}.tar.bz2'
-            url = f'https://github.com/fcitx-contrib/fcitx5-macos-plugins/releases/download/latest/{name}'
+            url = f'https://github.com/fcitx-contrib/fcitx5-plugins/releases/download/macos/{name}'
             download(url, name, f'{PLUGINS_DIR}/{name}')
 
 
