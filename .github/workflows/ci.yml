@@ -55,6 +55,7 @@ jobs:
 
       - name: Build vanilla edition
         run: |
+          git fetch --tags -f
           python package.py
           mv build/src/Fcitx5Installer.zip .
           rm -rf build
