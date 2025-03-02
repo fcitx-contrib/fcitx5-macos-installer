@@ -1,4 +1,5 @@
 import os
+import subprocess
 import sys
 import requests
 
@@ -19,6 +20,10 @@ def sh(command: str):
     assert os.system(command) == 0
 
 
+def dollar(command: str):
+    return subprocess.check_output(command, shell=True, text=True).strip()
+
+
 def download(url: str, key: str, path: str):
     cache_path = f'cache/{key}'
     if os.path.exists(cache_path):
@@ -28,7 +33,7 @@ def download(url: str, key: str, path: str):
         sh(f'curl -L -o {cache_path} {url}')
     sh(f'cp {cache_path} {path}')
 
-def write_meta():
+def write_meta(tag: str):
     edition = sys.argv[1] if len(sys.argv) >= 2 else ''
 
     api_prefix = 'https://api.github.com/repos/fcitx-contrib/fcitx5-macos'
@@ -38,16 +43,20 @@ def write_meta():
     if token:
         headers['Authorization'] = f'token {token}'
 
-    # latest_commit = {'object': {'sha': '47ee7b4367198da8bc2e09bee183e846d68ca3e6'}}
-    latest_commit = requests.get(f'{api_prefix}/git/ref/tags/latest', headers=headers).json()
-    commit = latest_commit['object']['sha']
+    if tag == 'latest':
+        # latest_commit = {'object': {'sha': '47ee7b4367198da8bc2e09bee183e846d68ca3e6'}}
+        latest_commit = requests.get(f'{api_prefix}/git/ref/tags/latest', headers=headers).json()
+        commit = latest_commit['object']['sha']
+    else:
+        commit = ''
 
     # latest_release = {'published_at': '2024-03-14T11:42:45Z'}
-    latest_release = requests.get(f'{api_prefix}/releases/tags/latest', headers=headers).json()
+    latest_release = requests.get(f'{api_prefix}/releases/tags/{tag}', headers=headers).json()
     date = latest_release['published_at']
 
     with open('src/meta.swift', 'w') as f:
         f.write(f'let edition = "{edition}"\n')
+        f.write(f'let releaseTag = "{tag}"\n')
         f.write(f'let commit = "{commit}"\n')
         f.write(f'let date = "{date}"\n')
 
@@ -77,10 +86,10 @@ def build():
     sh(f'rm -f "${EXECUTABLE_DIR}/Fcitx5Installer.d"')
 
 
-def download_fcitx5():
+def download_fcitx5(tag: str):
     for arch in ARCHES:
         name = f'Fcitx5-{arch}.tar.bz2'
-        url = f'https://github.com/fcitx-contrib/fcitx5-macos/releases/download/latest/{name}'
+        url = f'https://github.com/fcitx-contrib/fcitx5-macos/releases/download/{tag}/{name}'
         download(url, name, f'{RESOURCES_DIR}/{name}')
 
 
@@ -103,7 +112,7 @@ PROFILE_TAIL = '''
 '''
 
 
-def download_plugins():
+def download_plugins(tag: str):
     if len(sys.argv) < 3:
         return
     plugins = sys.argv[2].split(',')
@@ -111,7 +120,7 @@ def download_plugins():
     for plugin in plugins:
         for arch in ARCHES + ('any',):
             name = f'{plugin}-{arch}.tar.bz2'
-            url = f'https://github.com/fcitx-contrib/fcitx5-plugins/releases/download/macos/{name}'
+            url = f'https://github.com/fcitx-contrib/fcitx5-plugins/releases/download/macos-{tag}/{name}'
             download(url, name, f'{PLUGINS_DIR}/{name}')
 
 
@@ -152,10 +161,11 @@ def make_zip():
 
 
 if __name__ == '__main__':
-    write_meta()
+    tag = dollar('git describe --exact-match || echo latest')
+    write_meta(tag)
     build()
-    download_fcitx5()
-    download_plugins()
+    download_fcitx5(tag)
+    download_plugins(tag)
     generate_profile()
     generate_config()
     make_zip()

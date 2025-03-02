@@ -4,6 +4,8 @@ on:
   push:
     branches:
       - master
+    tags:
+      - '[0-9]+.*'
   pull_request:
   workflow_dispatch:
 
@@ -76,21 +78,21 @@ jobs:
           rm -rf build
 
       - name: Upload artifact
-        if: ${{ github.ref != 'refs/heads/master' }}
+        if: ${{ github.event_name == 'pull_request' }}
         uses: actions/upload-artifact@v4
         with:
           name: artifact-${{ matrix.os }}
           path: |
             *.zip
 
-      - name: Create Nightly release
-        if: ${{ (matrix.os == 'macos-15') && (github.ref == 'refs/heads/master') }}
+      - name: Release
+        if: ${{ (matrix.os == 'macos-15') && (github.event_name != 'pull_request') }}
         uses: 'marvinpinto/action-automatic-releases@latest'
         with:
           repo_token: ${{ secrets.GITHUB_TOKEN }}
-          automatic_release_tag: latest
-          prerelease: true
-          title: "Nightly Build"
+          automatic_release_tag: ${{ github.ref == 'refs/heads/master' && 'latest' || github.ref_name }}
+          prerelease: ${{ github.ref == 'refs/heads/master' }}
+          title: ${{ github.ref == 'refs/heads/master' && 'Nightly Build' || github.ref_name }}
           files: |
             Fcitx5Installer.zip
             Fcitx5-Pinyin.zip

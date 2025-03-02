@@ -83,13 +83,14 @@ struct ContentView: View {
         action: {
           if let url = URL(
             string:
-              "https://github.com/fcitx-contrib/fcitx5-macos/commit/" + commit
+              "https://github.com/fcitx-contrib/fcitx5-macos/"
+              + (releaseTag == "latest" ? "commit/" + commit : "tree/" + releaseTag)
           ) {
             NSWorkspace.shared.open(url)
           }
         },
         label: {
-          Text(commit.prefix(7))
+          Text(releaseTag == "latest" ? String(commit.prefix(7)) : releaseTag)
             .foregroundColor(.blue)
         }
       )
