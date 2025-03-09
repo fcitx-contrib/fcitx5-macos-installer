@@ -55,7 +55,9 @@ jobs:
 
       - name: Build vanilla edition
         run: |
-          git fetch --tags -f
+          if [[ ${{ github.event_name }} != 'pull_request' && ${{ github.ref }} != 'refs/heads/master' ]]; then
+            git fetch --tags -f
+          fi
           python package.py
           mv build/src/Fcitx5Installer.zip .
           rm -rf build
