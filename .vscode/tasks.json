@@ -1,0 +1,29 @@
+{
+    "version": "2.0.0",
+    "tasks": [
+        {
+            "type": "shell",
+            "label": "Build",
+            "command": "python package.py",
+            "group": {
+                "kind": "build"
+            }
+        },
+        {
+            "type": "shell",
+            "label": "Format",
+            "command": "./scripts/format.sh",
+            "group": {
+                "kind": "build"
+            }
+        },
+        {
+            "type": "shell",
+            "label": "Lint",
+            "command": "./scripts/lint.sh",
+            "group": {
+                "kind": "build"
+            }
+        }
+    ]
+}

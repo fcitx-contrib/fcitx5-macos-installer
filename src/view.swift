@@ -6,18 +6,19 @@ let logPath = "/tmp/Fcitx5Installer.log"
 
 let bundleId = "org.fcitx.inputmethod.Fcitx5"
 let inputSourceId = "org.fcitx.inputmethod.Fcitx5.fcitx5"
+let zhHansInputSourceId = "org.fcitx.inputmethod.Fcitx5.zhHans"
 
-func selectInputMethod() {
+func selectInputMethod(_ id: String) {
   let conditions = NSMutableDictionary()
   conditions.setValue(bundleId, forKey: kTISPropertyBundleID as String)
-  // There are 2 items with kTISPropertyBundleID.
+  // There are 3 items with kTISPropertyBundleID.
   // We've enabled the parent, which has kTISPropertyInputSourceID: org.fcitx.inputmethod.Fcitx5
-  // Now we select the child, which has kTISPropertyInputSourceID: org.fcitx.inputmethod.Fcitx5.fcitx5
+  // Now we select the child identified by kTISPropertyInputSourceID.
   conditions.setValue(inputSourceId, forKey: kTISPropertyInputSourceID as String)
   if let array = TISCreateInputSourceList(conditions, true)?.takeRetainedValue()
     as? [TISInputSource]
   {
-    for inputSource in array {
+    for inputSource: TISInputSource in array {
       TISSelectInputSource(inputSource)
     }
   }
@@ -133,7 +134,9 @@ struct ContentView: View {
               }
             }
           } else {
-            selectInputMethod()
+            // Not sure which one so try both. For first installation, neither may work.
+            selectInputMethod(inputSourceId)
+            selectInputMethod(zhHansInputSourceId)
             NSApplication.shared.terminate(self)
           }
         },

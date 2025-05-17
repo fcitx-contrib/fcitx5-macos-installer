@@ -25,10 +25,7 @@ jobs:
           pip install pyright ruff
 
       - name: Lint
-        run: |
-          swift-format lint -rs im src
-          ruff check package.py
-          pyright package.py
+        run: ./scripts/lint.sh
 
   build:
     needs: lint
