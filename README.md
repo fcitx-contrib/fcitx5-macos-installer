@@ -8,6 +8,6 @@ Support macOS >= 13
 
 ## Packaging
 ```sh
-python package.py [edition] [plugin,...] [enabled_im,...] [true]
+python package.py tag [edition] [plugin,...] [enabled_im,...] [true]
 ```
 See [ci.yml](.github/workflows/ci.yml) for examples.

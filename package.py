@@ -34,7 +34,7 @@ def download(url: str, key: str, path: str):
     sh(f'cp {cache_path} {path}')
 
 def write_meta(tag: str):
-    edition = sys.argv[1] if len(sys.argv) >= 2 else ''
+    edition = sys.argv[2] if len(sys.argv) >= 3 else ''
 
     api_prefix = 'https://api.github.com/repos/fcitx-contrib/fcitx5-macos'
 
@@ -113,9 +113,9 @@ PROFILE_TAIL = '''
 
 
 def download_plugins(tag: str):
-    if len(sys.argv) < 3:
+    if len(sys.argv) < 4:
         return
-    plugins = sys.argv[2].split(',')
+    plugins = sys.argv[3].split(',')
     sh(f'mkdir -p {PLUGINS_DIR}')
     for plugin in plugins:
         for arch in ARCHES + ('any',):
@@ -128,10 +128,10 @@ def generate_profile():
     '''
     Set default input methods
     '''
-    if len(sys.argv) < 4:
+    if len(sys.argv) < 5:
         return
     sh(f'mkdir -p {CONFIG_DIR}')
-    input_methods = sys.argv[3].split(',')
+    input_methods = sys.argv[4].split(',')
     body = ''.join(PROFILE_ITEM.format(i, im) for i, im in enumerate(['keyboard-us', *input_methods]))
     with open(f'{CONFIG_DIR}/profile', 'w') as f:
         f.write(PROFILE_HEADER.format(input_methods[0]) + body + PROFILE_TAIL)
@@ -147,9 +147,9 @@ def generate_config():
     '''
     Set "Active by default"
     '''
-    if len(sys.argv) < 5:
+    if len(sys.argv) < 6:
         return
-    if sys.argv[4] != 'true':
+    if sys.argv[5] != 'true':
         return
     with open(f'{CONFIG_DIR}/config', 'w') as f:
         f.write(ACTIVE_BY_DEFAULT)
@@ -161,7 +161,7 @@ def make_zip():
 
 
 if __name__ == '__main__':
-    tag = dollar('git describe --exact-match || echo latest')
+    tag = sys.argv[1]
     write_meta(tag)
     build()
     download_fcitx5(tag)
