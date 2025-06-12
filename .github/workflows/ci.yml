@@ -50,30 +50,35 @@ jobs:
           brew install ninja
           pip install requests
 
-      - name: Build vanilla edition
+      - name: Get tag
         run: |
           if [[ ${{ github.event_name }} != 'pull_request' && ${{ github.ref }} != 'refs/heads/master' ]]; then
-            git fetch --tags -f
+            echo "tag=${{ github.ref_name }}" >> "$GITHUB_ENV"
+          else
+            echo "tag=latest" >> "$GITHUB_ENV"
           fi
-          python package.py
+
+      - name: Build vanilla edition
+        run: |
+          python package.py $tag
           mv build/src/Fcitx5Installer.zip .
           rm -rf build
 
       - name: Build Pinyin edition
         run: |
-          python package.py 拼音版 chinese-addons,lua pinyin true
+          python package.py $tag 拼音版 chinese-addons,lua pinyin true
           mv build/src/Fcitx5Installer.zip Fcitx5-Pinyin.zip
           rm -rf build
 
       - name: Build Rime edition
         run: |
-          python package.py 中州韵版 rime rime true
+          python package.py $tag 中州韵版 rime rime true
           mv build/src/Fcitx5Installer.zip Fcitx5-Rime.zip
           rm -rf build
 
       - name: Build Japanese edition
         run: |
-          python package.py 日本語版 mozc mozc true
+          python package.py $tag 日本語版 mozc mozc true
           mv build/src/Fcitx5Installer.zip Fcitx5-Japanese.zip
           rm -rf build
 
