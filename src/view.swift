@@ -80,23 +80,13 @@ struct ContentView: View {
         Spacer().frame(height: 5)
       }
 
-      Button(
-        action: {
-          if let url = URL(
-            string:
-              "https://github.com/fcitx-contrib/fcitx5-macos/"
-              + (releaseTag == "latest" ? "commit/" + commit : "tree/" + releaseTag)
-          ) {
-            NSWorkspace.shared.open(url)
-          }
-        },
-        label: {
-          Text(releaseTag == "latest" ? String(commit.prefix(7)) : releaseTag)
-            .foregroundColor(.blue)
-        }
+      Link(
+        releaseTag == "latest" ? String(commit.prefix(7)) : releaseTag,
+        destination: URL(
+          string: "https://github.com/fcitx-contrib/fcitx5-macos/"
+            + (releaseTag == "latest" ? "commit/" + commit : "tree/" + releaseTag))!
       )
-      .buttonStyle(PlainButtonStyle())
-      .focusable(false)
+      .focusable(false)  // Let install button get focus on appear.
       .alert(
         "Error",
         isPresented: $hasError,
