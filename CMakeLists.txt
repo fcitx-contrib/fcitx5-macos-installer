@@ -1,11 +1,13 @@
-cmake_minimum_required(VERSION 4.1)
+cmake_minimum_required(VERSION 4.0)
 
 project(fcitx5-macos-installer LANGUAGES Swift)
 
 list(PREPEND CMAKE_MODULE_PATH "${PROJECT_SOURCE_DIR}/cmake")
 
 set(CMAKE_OSX_DEPLOYMENT_TARGET 13)
-add_definitions(-target "${CMAKE_OSX_ARCHITECTURES}-apple-macos${CMAKE_OSX_DEPLOYMENT_TARGET}")
+set(F5M_TARGET "${CMAKE_OSX_ARCHITECTURES}-apple-macos${CMAKE_OSX_DEPLOYMENT_TARGET}")
+add_compile_options(-target "${F5M_TARGET}")
+add_link_options(-target "${F5M_TARGET}")
 
 set(APP_NAME Fcitx5Installer)
 add_subdirectory(deps)
