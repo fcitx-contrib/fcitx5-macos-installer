@@ -112,31 +112,27 @@ struct ContentView: View {
 
       Spacer().frame(height: 50)
 
-      Button(
-        action: {
-          if state == .pending {
-            state = .installing
-            sudoError = false
-            DispatchQueue.global().async {
-              let success = executeInstallScript()
-              DispatchQueue.main.async {
-                state = success ? .success : .pending
-              }
+      Button {
+        if state == .pending {
+          state = .installing
+          sudoError = false
+          DispatchQueue.global().async {
+            let success = executeInstallScript()
+            DispatchQueue.main.async {
+              state = success ? .success : .pending
             }
-          } else {
-            // Not sure which one so try both. For first installation, neither may work.
-            selectInputMethod(inputSourceId)
-            selectInputMethod(zhHansInputSourceId)
-            NSApplication.shared.terminate(self)
           }
-        },
-        label: {
-          Text(state == .pending ? "Install" : state == .installing ? "Installing" : "Start typing")
-            .padding()
-            .padding()
+        } else {
+          // Not sure which one so try both. For first installation, neither may work.
+          selectInputMethod(inputSourceId)
+          selectInputMethod(zhHansInputSourceId)
+          NSApplication.shared.terminate(self)
         }
-      )
-      .controlSize(.large)
+      } label: {
+        Text(state == .pending ? "Install" : state == .installing ? "Installing" : "Start typing")
+          .font(.system(size: 20))
+          .frame(width: 150, height: 40)
+      }
       .disabled(state == .installing)
       .background(state == .pending ? Color.blue : state == .success ? Color.green : Color.gray)
       .cornerRadius(5)
