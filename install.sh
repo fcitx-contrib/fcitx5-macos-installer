@@ -9,6 +9,7 @@ Resources="$2"
 ARCH="$(uname -m)"
 INSTALL_DIR="/Library/Input Methods"
 APP_DIR="$INSTALL_DIR/Fcitx5.app"
+RESOURCES_DIR="$APP_DIR/Contents/Resources"
 DATA_DIR="/Users/$user/Library/fcitx5"
 CONFIG_DIR="/Users/$user/.config/fcitx5"
 
@@ -16,6 +17,14 @@ cd "$Resources"
 mkdir -p "$INSTALL_DIR"
 rm -rf "$APP_DIR/Contents/*"
 tar xjvf "Fcitx5-$ARCH.tar.bz2" -C "$INSTALL_DIR"
+
+major_version=$(sw_vers -productVersion | cut -d. -f1)
+if (( major_version >= 26 )); then
+  cp "$RESOURCES_DIR/menu_icon_26.pdf" "$RESOURCES_DIR/menu_icon.pdf"
+else
+  cp "$RESOURCES_DIR/menu_icon_15.pdf" "$RESOURCES_DIR/menu_icon.pdf"
+fi
+
 xattr -dr com.apple.quarantine "$APP_DIR"
 codesign --force --sign - --deep "$APP_DIR"
 
