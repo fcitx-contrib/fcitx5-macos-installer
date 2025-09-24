@@ -8,6 +8,8 @@ let bundleId = "org.fcitx.inputmethod.Fcitx5"
 let inputSourceId = "org.fcitx.inputmethod.Fcitx5.fcitx5"
 let zhHansInputSourceId = "org.fcitx.inputmethod.Fcitx5.zhHans"
 
+var isFirstInstallation = false  // Don't check FS here as global variable is lazily initialized.
+
 func selectInputMethod(_ id: String) {
   let conditions = NSMutableDictionary()
   conditions.setValue(bundleId, forKey: kTISPropertyBundleID as String)
@@ -53,6 +55,7 @@ enum InstallationState {
 
 struct ContentView: View {
   @State private var state: InstallationState = .pending
+  @State private var showLogOut = false
   @State private var hasError = false
   @State private var sudoError = false
   @State private var errorMsg: String? = nil {
@@ -92,8 +95,10 @@ struct ContentView: View {
         isPresented: $hasError,
         presenting: ()
       ) { _ in
-        Button("OK") {
+        Button {
           errorMsg = nil
+        } label: {
+          Text("OK")
         }
         if !sudoError {
           Button("Copy log") {
@@ -102,8 +107,19 @@ struct ContentView: View {
             pasteboard.setString(logContent ?? "", forType: .string)
           }
         }
-      } message: { details in
+      } message: { _ in
         Text(errorMsg ?? "Unknown Error")
+      }
+      .alert("Warning", isPresented: $showLogOut, presenting: ()) { _ in
+        Button {
+          showLogOut = false
+        } label: {
+          Text("OK")
+        }
+      } message: { _ in
+        Text(
+          "To display the candidate window in full-screen applications, please log out or restart mac."
+        )
       }
 
       Spacer().frame(height: 5)
@@ -116,10 +132,17 @@ struct ContentView: View {
         if state == .pending {
           state = .installing
           sudoError = false
+          // Ensure isFirstInstallation can only be changed from false to true.
+          if !FileManager.default.fileExists(atPath: "/Library/Input Methods/Fcitx5.app") {
+            isFirstInstallation = true
+          }
           DispatchQueue.global().async {
             let success = executeInstallScript()
             DispatchQueue.main.async {
               state = success ? .success : .pending
+              if success && isFirstInstallation {
+                showLogOut = true
+              }
             }
           }
         } else {
