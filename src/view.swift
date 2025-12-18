@@ -5,18 +5,17 @@ import SwiftUI
 let logPath = "/tmp/Fcitx5Installer.log"
 
 let bundleId = "org.fcitx.inputmethod.Fcitx5"
-let inputSourceId = "org.fcitx.inputmethod.Fcitx5.fcitx5"
-let zhHansInputSourceId = "org.fcitx.inputmethod.Fcitx5.zhHans"
-
-var isFirstInstallation = false  // Don't check FS here as global variable is lazily initialized.
+let inputSourceId = "\(bundleId).fcitx5"
+let zhHansInputSourceId = "\(bundleId).zhHans"
+let zhHantInputSourceId = "\(bundleId).zhHant"
 
 func selectInputMethod(_ id: String) {
   let conditions = NSMutableDictionary()
   conditions.setValue(bundleId, forKey: kTISPropertyBundleID as String)
-  // There are 3 items with kTISPropertyBundleID.
+  // There are 4 items with kTISPropertyBundleID.
   // We've enabled the parent, which has kTISPropertyInputSourceID: org.fcitx.inputmethod.Fcitx5
   // Now we select the child identified by kTISPropertyInputSourceID.
-  conditions.setValue(inputSourceId, forKey: kTISPropertyInputSourceID as String)
+  conditions.setValue(id, forKey: kTISPropertyInputSourceID as String)
   if let array = TISCreateInputSourceList(conditions, true)?.takeRetainedValue()
     as? [TISInputSource]
   {
@@ -64,6 +63,7 @@ struct ContentView: View {
     }
   }
   @State private var logContent: String? = nil
+  @State private var isFirstInstallation = false
 
   var body: some View {
     VStack {
@@ -136,9 +136,9 @@ struct ContentView: View {
           if !FileManager.default.fileExists(atPath: "/Library/Input Methods/Fcitx5.app") {
             isFirstInstallation = true
           }
-          DispatchQueue.global().async {
+          Task.detached {
             let success = executeInstallScript()
-            DispatchQueue.main.async {
+            Task { @MainActor in
               state = success ? .success : .pending
               if success && isFirstInstallation {
                 showLogOut = true
@@ -149,6 +149,7 @@ struct ContentView: View {
           // Not sure which one so try both. For first installation, neither may work.
           selectInputMethod(inputSourceId)
           selectInputMethod(zhHansInputSourceId)
+          selectInputMethod(zhHantInputSourceId)
           NSApplication.shared.terminate(self)
         }
       } label: {
@@ -169,7 +170,7 @@ struct ContentView: View {
     }
   }
 
-  func executeInstallScript() -> Bool {
+  nonisolated func executeInstallScript() -> Bool {
     guard let resourcesPath = Bundle.main.resourcePath else {
       print("Resources not found")
       return false
@@ -189,17 +190,15 @@ struct ContentView: View {
     var sudoCanceled = false
     appleScript.executeAndReturnError(&error)
     if let error = error {
-      errorMsg = error["NSAppleScriptErrorBriefMessage"] as? String ?? "Unknown Error"
-      if let errno = error["NSAppleScriptErrorNumber"] as? Int {
-        if errno == -128 {
-          sudoCanceled = true
-          DispatchQueue.main.async {
+      Task { @MainActor in
+        errorMsg = error["NSAppleScriptErrorBriefMessage"] as? String ?? "Unknown Error"
+        if let errno = error["NSAppleScriptErrorNumber"] as? Int {
+          if errno == -128 {
+            sudoCanceled = true
             sudoError = true
           }
         }
-      }
-      if !sudoCanceled {
-        DispatchQueue.main.async {
+        if !sudoCanceled {
           logContent = nil
           do {
             let logURL = URL(fileURLWithPath: logPath)
