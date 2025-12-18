@@ -8,6 +8,7 @@ set(CMAKE_OSX_DEPLOYMENT_TARGET 13)
 set(F5M_TARGET "${CMAKE_OSX_ARCHITECTURES}-apple-macos${CMAKE_OSX_DEPLOYMENT_TARGET}")
 add_compile_options(-target "${F5M_TARGET}")
 add_link_options(-target "${F5M_TARGET}")
+set(CMAKE_Swift_LANGUAGE_VERSION 6)
 
 set(APP_NAME Fcitx5Installer)
 add_subdirectory(deps)
