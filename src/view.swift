@@ -86,7 +86,7 @@ struct ContentView: View {
       Link(
         releaseTag == "latest" ? String(commit.prefix(7)) : releaseTag,
         destination: URL(
-          string: "https://github.com/fcitx-contrib/fcitx5-macos/"
+          string: "https://github.com/fcitx/fcitx5-macos/"
             + (releaseTag == "latest" ? "commit/" + commit : "tree/" + releaseTag))!
       )
       .focusable(false)  // Let install button get focus on appear.

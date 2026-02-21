@@ -36,7 +36,7 @@ def download(url: str, key: str, path: str):
 def write_meta(tag: str):
     edition = sys.argv[2] if len(sys.argv) >= 3 else ''
 
-    api_prefix = 'https://api.github.com/repos/fcitx-contrib/fcitx5-macos'
+    api_prefix = 'https://api.github.com/repos/fcitx/fcitx5-macos'
 
     headers = {}
     token = os.getenv('GITHUB_TOKEN')
@@ -89,7 +89,7 @@ def build():
 def download_fcitx5(tag: str):
     for arch in ARCHES:
         name = f'Fcitx5-{arch}.tar.bz2'
-        url = f'https://github.com/fcitx-contrib/fcitx5-macos/releases/download/{tag}/{name}'
+        url = f'https://github.com/fcitx/fcitx5-macos/releases/download/{tag}/{name}'
         download(url, name, f'{RESOURCES_DIR}/{name}')
 
 
