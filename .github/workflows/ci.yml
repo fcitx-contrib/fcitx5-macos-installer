@@ -57,26 +57,26 @@ jobs:
       - name: Build vanilla edition
         run: |
           python package.py $tag
-          mv build/src/Fcitx5Installer.zip .
-          rm -rf build
+          mv build/universal/src/Fcitx5Installer.zip .
+          rm -rf build/universal
 
       - name: Build Pinyin edition
         run: |
           python package.py $tag 拼音版 chinese-addons,lua pinyin true
-          mv build/src/Fcitx5Installer.zip Fcitx5-Pinyin.zip
-          rm -rf build
+          mv build/universal/src/Fcitx5Installer.zip Fcitx5-Pinyin.zip
+          rm -rf build/universal
 
       - name: Build Rime edition
         run: |
           python package.py $tag 中州韵版 rime rime true
-          mv build/src/Fcitx5Installer.zip Fcitx5-Rime.zip
-          rm -rf build
+          mv build/universal/src/Fcitx5Installer.zip Fcitx5-Rime.zip
+          rm -rf build/universal
 
       - name: Build Japanese edition
         run: |
           python package.py $tag 日本語版 mozc mozc true
-          mv build/src/Fcitx5Installer.zip Fcitx5-Japanese.zip
-          rm -rf build
+          mv build/universal/src/Fcitx5Installer.zip Fcitx5-Japanese.zip
+          rm -rf build/universal
 
       - name: Upload artifact
         if: ${{ github.event_name == 'pull_request' }}

@@ -4,7 +4,7 @@ English
 
 # Fcitx5 macOS Installer
 
-Support macOS >= 13
+Support macOS ≥ 13.3.
 
 ## Packaging
 ```sh

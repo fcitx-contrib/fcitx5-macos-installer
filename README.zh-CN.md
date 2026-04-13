@@ -4,17 +4,14 @@
 
 # 小企鹅输入法 macOS 版安装器
 
-支持 macOS >= 13
+支持 macOS ≥ 13.3。
 
 请选择适合您的安装包：
 * [拼音版](https://github.com/fcitx-contrib/fcitx5-macos-installer/releases/download/latest/Fcitx5-Pinyin.zip)（可选双拼、五笔、仓颉等，中、英切换快捷键为 Ctrl + 左 Shift）
 * [中州韵版](https://github.com/fcitx-contrib/fcitx5-macos-installer/releases/download/latest/Fcitx5-Rime.zip)（可在`高级`中导入本地鼠须管的方案，或小企鹅 Android 版/仓输入法的备份文件；小企鹅的 rime 用户目录为 `~/.local/share/fcitx5/rime`）
 * [原装版](https://github.com/fcitx-contrib/fcitx5-macos-installer/releases/download/latest/Fcitx5Installer.zip)（不适合新手，通过内置的`插件管理器`按需安装输入法）
 
-安装包本身适用于 Intel 和 Apple Silicon，
-但会根据您的机器类型，
-安装单一架构的输入法，
-减少不必要的空间占用。
+安装包本身适用于 Intel 和 Apple Silicon，但会根据您的机器类型，安装单一架构的输入法，减少不必要的空间占用。
 
 当您解压并打开安装程序时，系统可能阻止您打开未认证的程序。
 
@@ -41,15 +38,15 @@
 
 ### 拼音版
 ```sh
-cd /tmp && rm -rf Fcitx5Installer.app && curl -LO https://github.com/fcitx-contrib/fcitx5-macos-installer/releases/download/latest/Fcitx5-Pinyin.zip && unzip Fcitx5-Pinyin.zip && open Fcitx5Installer.app
+cd /tmp && rm -rf Fcitx5Installer.app && curl -fsSLO https://github.com/fcitx-contrib/fcitx5-macos-installer/releases/download/latest/Fcitx5-Pinyin.zip && unzip Fcitx5-Pinyin.zip && open Fcitx5Installer.app
 ```
 
 ### 中州韵版
 ```sh
-cd /tmp && rm -rf Fcitx5Installer.app && curl -LO https://github.com/fcitx-contrib/fcitx5-macos-installer/releases/download/latest/Fcitx5-Rime.zip && unzip Fcitx5-Rime.zip && open Fcitx5Installer.app
+cd /tmp && rm -rf Fcitx5Installer.app && curl -fsSLO https://github.com/fcitx-contrib/fcitx5-macos-installer/releases/download/latest/Fcitx5-Rime.zip && unzip Fcitx5-Rime.zip && open Fcitx5Installer.app
 ```
 
 ### 原装版
 ```sh
-cd /tmp && rm -rf Fcitx5Installer.app && curl -LO https://github.com/fcitx-contrib/fcitx5-macos-installer/releases/download/latest/Fcitx5Installer.zip && unzip Fcitx5Installer.zip && open Fcitx5Installer.app
+cd /tmp && rm -rf Fcitx5Installer.app && curl -fsSLO https://github.com/fcitx-contrib/fcitx5-macos-installer/releases/download/latest/Fcitx5Installer.zip && unzip Fcitx5Installer.zip && open Fcitx5Installer.app
 ```
