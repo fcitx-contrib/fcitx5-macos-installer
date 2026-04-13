@@ -5,14 +5,24 @@ import requests
 
 
 ARCHES = ('x86_64', 'arm64')
-CONTENTS_DIR = 'build/src/Fcitx5Installer.app/Contents'
+BUILD_DIR = 'build/universal'
+CONTENTS_DIR = f'{BUILD_DIR}/src/Fcitx5Installer.app/Contents'
+INFO_PLIST = f'{CONTENTS_DIR}/Info.plist'
 RESOURCES_DIR = f'{CONTENTS_DIR}/Resources'
 EXECUTABLE_DIR = f'{CONTENTS_DIR}/MacOS'
 EXECUTABLE = f'{EXECUTABLE_DIR}/Fcitx5Installer'
-REGISTER_IM = 'build/im/register_im'
-ENABLE_IM = 'build/im/enable_im'
+REGISTER_IM = f'{BUILD_DIR}/im/register_im'
+ENABLE_IM = f'{BUILD_DIR}/im/enable_im'
 PLUGINS_DIR = f'{RESOURCES_DIR}/plugins'
 CONFIG_DIR = f'{RESOURCES_DIR}/config'
+
+
+def arm(path: str):
+    return path.replace('universal', 'arm64')
+
+
+def x86(path: str):
+    return path.replace('universal', 'x86_64')
 
 
 def sh(command: str):
@@ -30,7 +40,7 @@ def download(url: str, key: str, path: str):
         print(f'Using cached {key}')
     else:
         print(f'Downloading {key}')
-        sh(f'curl -L -o {cache_path} {url}')
+        sh(f'curl -fsSLo {cache_path} {url}')
     sh(f'cp {cache_path} {path}')
 
 def write_meta(tag: str):
@@ -65,17 +75,15 @@ def build():
     sh(f'mkdir -p "{RESOURCES_DIR}"')
     for arch in ARCHES:
         print(f'Building {arch}')
-        sh(f'cmake -B build -G Ninja -DCMAKE_BUILD_TYPE=Release -DCMAKE_OSX_ARCHITECTURES={arch}')
-        sh('cmake --build build')
-        for exe in (EXECUTABLE, REGISTER_IM, ENABLE_IM):
-            sh(f'mv {exe} {exe}-{arch}')
+        sh(f'cmake -B build/{arch} -G Ninja -DCMAKE_BUILD_TYPE=Release -DCMAKE_OSX_ARCHITECTURES={arch}')
+        sh(f'cmake --build build/{arch}')
     print('Generating universal')
-    sh(f'lipo -create {EXECUTABLE}-x86_64 {EXECUTABLE}-arm64 -output {EXECUTABLE}')
-    sh(f'lipo -create {REGISTER_IM}-x86_64 {REGISTER_IM}-arm64 -output {RESOURCES_DIR}/register_im')
-    sh(f'lipo -create {ENABLE_IM}-x86_64 {ENABLE_IM}-arm64 -output {RESOURCES_DIR}/enable_im')
-    for arch in ARCHES:
-        sh(f'rm {EXECUTABLE}-{arch}')
+    sh(f'mkdir -p {EXECUTABLE_DIR}')
+    sh(f'lipo -create {x86(EXECUTABLE)} {arm(EXECUTABLE)} -output {EXECUTABLE}')
+    sh(f'lipo -create {x86(REGISTER_IM)} {arm(REGISTER_IM)} -output {RESOURCES_DIR}/register_im')
+    sh(f'lipo -create {x86(ENABLE_IM)} {arm(ENABLE_IM)} -output {RESOURCES_DIR}/enable_im')
 
+    sh(f'cp {arm(INFO_PLIST)} {INFO_PLIST}')
     sh(f'cp assets/fcitx.icns "{RESOURCES_DIR}"')
 
     for name in os.listdir('assets'):
@@ -83,7 +91,6 @@ def build():
             sh(f'cp -r assets/{name} "{RESOURCES_DIR}"')
 
     sh(f'cp install.sh "{RESOURCES_DIR}"')
-    sh(f'rm -f "${EXECUTABLE_DIR}/Fcitx5Installer.d"')
 
 
 def download_fcitx5(tag: str):
@@ -156,7 +163,7 @@ def generate_config():
 
 
 def make_zip():
-    os.chdir('build/src')
+    os.chdir(f'{BUILD_DIR}/src')
     sh('zip -r -0 Fcitx5Installer.zip Fcitx5Installer.app')
 
 
