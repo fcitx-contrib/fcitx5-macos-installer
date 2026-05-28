@@ -25,7 +25,8 @@ else
   cp "$RESOURCES_DIR/menu_icon_15.pdf" "$RESOURCES_DIR/menu_icon.pdf"
 fi
 
-xattr -dr com.apple.quarantine "$APP_DIR"
+# Python venv/bin/xattr could conflict.
+/usr/bin/xattr -dr com.apple.quarantine "$APP_DIR"
 codesign --force --sign - --deep "$APP_DIR"
 
 mkdir -p "$DATA_DIR"
