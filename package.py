@@ -1,8 +1,8 @@
 import os
 import subprocess
 import sys
-import requests
 
+import requests
 
 ARCHES = ('x86_64', 'arm64')
 BUILD_DIR = 'build/universal'
