@@ -35,6 +35,12 @@ for plugin_path in plugins/*-{$ARCH,any}.tar.bz2; do
 done
 chown -R "$user" "$DATA_DIR"
 
+# Plugin libraries are ad-hoc signed; if this script runs with quarantine
+# inherited from the installer app (e.g. launched via right-click Open, or
+# from a notarized repack), tar propagates the flag to extracted files and
+# Gatekeeper then blocks dlopen of the plugin .so files.
+/usr/bin/xattr -dr com.apple.quarantine "$DATA_DIR"
+
 mkdir -p "$CONFIG_DIR"
 if [[ -d config ]]; then
   pushd config
